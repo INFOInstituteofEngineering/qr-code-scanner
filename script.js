@@ -27,34 +27,35 @@ document.addEventListener("DOMContentLoaded", function () {
     let html5QrCode;
 
     // Start scanner
-startScanBtn.addEventListener("click", async function () {
-    startScanBtn.classList.add("hidden");
-    stopScanBtn.classList.remove("hidden");
-    qrVideo.classList.remove("hidden");
-
-    try {
-        // Request camera permissions
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        qrVideo.srcObject = stream; // Assign the camera stream to the video element
-        qrVideo.play(); // Start playing the video stream
-
-        html5QrCode = new Html5Qrcode("qr-video");
-        html5QrCode.start(
-            { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: { width: 200, height: 200 },
-            },
-            onScanSuccess,
-            onScanFailure
-        );
-    } catch (error) {
-        console.error("Camera access denied:", error);
-        alert("Failed to access camera. Please ensure your camera is connected and permissions are granted.");
-        startScanBtn.classList.remove("hidden");
-        stopScanBtn.classList.add("hidden");
-        qrVideo.classList.add("hidden");
-    }
+    startScanBtn.addEventListener("click", async function () {
+        startScanBtn.classList.add("hidden");
+        stopScanBtn.classList.remove("hidden");
+        qrVideo.classList.remove("hidden");
+    
+        try {
+            // Request camera permissions
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            qrVideo.srcObject = stream; // Assign the camera stream to the video element
+            qrVideo.play(); // Start playing the video stream
+    
+            html5QrCode = new Html5Qrcode("scanner-view"); // Change this to scanner-view instead of qr-video
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 200, height: 200 },
+                },
+                onScanSuccess,
+                onScanFailure
+            );
+        } catch (error) {
+            console.error("Camera access denied:", error);
+            alert("Failed to access camera. Please ensure your camera is connected and permissions are granted.");
+            startScanBtn.classList.remove("hidden");
+            stopScanBtn.classList.add("hidden");
+            qrVideo.classList.add("hidden");
+        }
+    });
         
         html5QrCode = new Html5Qrcode("qr-video");
         html5QrCode.start(
@@ -109,26 +110,41 @@ startScanBtn.addEventListener("click", async function () {
     });
 
     // Handle successful QR scan
+    // Add this at the top of your script.js file
+function logDebug(message, data = null) {
+    const timestamp = new Date().toLocaleTimeString();
+    if (data) {
+        console.log(`[${timestamp}] ${message}`, data);
+    } else {
+        console.log(`[${timestamp}] ${message}`);
+    }
+}
+
+// Improved onScanSuccess function
     function onScanSuccess(decodedText) {
-        // Play success sound
-        const successAudio = new Audio("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/audio/annotation-check.m4a");
-        successAudio.play();
+    logDebug("QR Code Scanned Successfully:", decodedText);
     
-        // Stop scanner after successful scan
+    // Play success sound
+    const successAudio = new Audio("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/audio/annotation-check.m4a");
+    successAudio.play();
+
+    // Stop scanner after successful scan
+    if (html5QrCode) {
         html5QrCode.stop().then(() => {
             startScanBtn.classList.remove("hidden");
             stopScanBtn.classList.add("hidden");
             qrVideo.classList.add("hidden");
-    
-            // Log the scanned data
-            console.log("Scanned Data:", decodedText);
-    
+            
             // Fetch participant details
             fetchParticipantDetails(decodedText);
         }).catch(err => {
             console.error("Error stopping scanner:", err);
         });
+    } else {
+        logDebug("Warning: html5QrCode instance not found when trying to stop scanner");
+        fetchParticipantDetails(decodedText);
     }
+}
 
     // Handle scan errors
     function onScanFailure(error) {
@@ -137,28 +153,47 @@ startScanBtn.addEventListener("click", async function () {
     }
 
     // Fetch participant details from server
+    // Fetch participant details from server
     async function fetchParticipantDetails(ticketId) {
         console.log("Fetching details for ticket ID:", ticketId);
-        try {
-            const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
-            console.log("Response status:", response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
     
-            const data = await response.json();
-            console.log("Response Data:", data);
+        // Show loading indicator
+        resultContainer.classList.remove("hidden");
+        ticketId.textContent = "Loading...";
+        statusIndicator.className = "status-indicator"; // Reset classes
+        statusIndicator.classList.add("status-pending");
+        statusText.textContent = "Checking...";
     
-            if (data.status === "success") {
-                displayParticipantDetails(data.participant);
-            } else {
-                showError("Invalid QR Code", "Participant not found");
-            }
-        } catch (error) {
-            console.error("Error fetching participant:", error);
-            showError("Server Error", "Could not connect to server");
+    try {
+        const apiUrl = "http://localhost:8000/participant/" + ticketId;
+        console.log("Requesting:", apiUrl);
+        
+        const response = await fetch(apiUrl);
+        console.log("Response status:", response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+        console.log("Response Data:", data);
+    
+        if (data.status === "success") {
+            displayParticipantDetails(data.participant);
+        } else {
+            showError("Invalid QR Code", "Participant not found");
+        }
+    } catch (error) {
+        console.error("Error fetching participant:", error);
+        
+        // Provide more specific error message
+        if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+            showError("Connection Error", "Could not connect to server. Make sure the server is running at http://localhost:8000");
+        } else {
+            showError("Server Error", error.message);
         }
     }
+}
 
     // Update participant status
     async function updateParticipantStatus(ticketId, statusType) {
@@ -280,5 +315,76 @@ startScanBtn.addEventListener("click", async function () {
         if (num === 2) return "nd";
         if (num === 3) return "rd";
         return "th";
+    }
+
+    // Add this code to fix the scanner configuration
+
+// Make sure scanner is properly configured
+function initializeScanner() {
+    // Clean up any existing scanner instance
+    if (html5QrCode) {
+        try {
+            html5QrCode.stop();
+        } catch (e) {
+            console.error("Error stopping existing scanner:", e);
+        }
+    }
+
+    try {
+        // The scanner-view div should contain the actual scanner
+        const scannerElement = document.getElementById("scanner-view");
+        
+        // Make sure we have a place to put the scanner
+        if (!scannerElement) {
+            console.error("Scanner element not found!");
+            return false;
+        }
+        
+        // Create a dedicated container for the QR scanner if not already there
+        let qrContainer = document.getElementById("qr-scanner-container");
+        if (!qrContainer) {
+            qrContainer = document.createElement("div");
+            qrContainer.id = "qr-scanner-container";
+            qrContainer.style.width = "100%";
+            qrContainer.style.height = "100%";
+            scannerElement.appendChild(qrContainer);
+        }
+        
+        // Create the scanner instance with the proper container
+        html5QrCode = new Html5Qrcode("qr-scanner-container");
+        return true;
+    } catch (error) {
+        console.error("Error initializing scanner:", error);
+        return false;
+    }
+}
+
+// Update the start scan button event listener
+startScanBtn.addEventListener("click", async function () {
+    if (!initializeScanner()) {
+        alert("Failed to initialize scanner. Please refresh the page and try again.");
+        return;
+    }
+    
+    startScanBtn.classList.add("hidden");
+    stopScanBtn.classList.remove("hidden");
+    qrVideo.classList.remove("hidden");
+
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 200, height: 200 },
+            },
+            onScanSuccess,
+            onScanFailure
+        );
+    } catch (error) {
+        console.error("Camera access denied:", error);
+        alert("Failed to access camera. Please ensure your camera is connected and permissions are granted.");
+        startScanBtn.classList.remove("hidden");
+        stopScanBtn.classList.add("hidden");
+        qrVideo.classList.add("hidden");
     }
 });
