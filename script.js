@@ -27,10 +27,32 @@ document.addEventListener("DOMContentLoaded", function () {
     let html5QrCode;
 
     // Start scanner
-    startScanBtn.addEventListener("click", function() {
+    startScanBtn.addEventListener("click", async function() {
         startScanBtn.classList.add("hidden");
         stopScanBtn.classList.remove("hidden");
         qrVideo.classList.remove("hidden");
+
+        try {
+            // Request camera permissions
+            await navigator.mediaDevices.getUserMedia({ video: true });
+    
+            html5QrCode = new Html5Qrcode("qr-video");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 200, height: 200 }
+                },
+                onScanSuccess,
+                onScanFailure
+            );
+            
+        } catch (error) {
+            console.error("Camera access denied:", error);
+            alert("Please grant camera access in browser settings.");
+            startScanBtn.classList.remove("hidden");
+            stopScanBtn.classList.add("hidden");
+        }
         
         html5QrCode = new Html5Qrcode("qr-video");
         html5QrCode.start(
