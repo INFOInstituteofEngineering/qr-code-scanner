@@ -27,32 +27,33 @@ document.addEventListener("DOMContentLoaded", function () {
     let html5QrCode;
 
     // Start scanner
-    startScanBtn.addEventListener("click", async function() {
+    startScanBtn.addEventListener("click", async function () {
         startScanBtn.classList.add("hidden");
         stopScanBtn.classList.remove("hidden");
         qrVideo.classList.remove("hidden");
 
-        try {
-            // Request camera permissions
-            await navigator.mediaDevices.getUserMedia({ video: true });
-    
-            html5QrCode = new Html5Qrcode("qr-video");
-            html5QrCode.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 200, height: 200 }
-                },
-                onScanSuccess,
-                onScanFailure
-            );
+    try {
+        // Request camera permissions
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        qrVideo.srcObject = stream;
 
-        } catch (error) {
-            console.error("Camera access denied:", error);
-            alert("Please grant camera access in browser settings.");
-            startScanBtn.classList.remove("hidden");
-            stopScanBtn.classList.add("hidden");
-        }
+        html5QrCode = new Html5Qrcode("qr-video");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 200, height: 200 },
+            },
+            onScanSuccess,
+            onScanFailure
+        );
+    } catch (error) {
+        console.error("Camera access denied:", error);
+        alert("Please grant camera access in browser settings.");
+        startScanBtn.classList.remove("hidden");
+        stopScanBtn.classList.add("hidden");
+        qrVideo.classList.add("hidden");
+    }
         
         html5QrCode = new Html5Qrcode("qr-video");
         html5QrCode.start(
@@ -133,24 +134,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fetch participant details from server
     async function fetchParticipantDetails(ticketId) {
-    console.log("Fetching details for ticket ID:", ticketId);
-    try {
-        const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const data = await response.json();
-        console.log("Response Data:", data);
-
-        if (data.status === "success") {
-            displayParticipantDetails(data.participant);
-        } else {
-            showError("Invalid QR Code", "Participant not found");
+        console.log("Fetching details for ticket ID:", ticketId);
+        try {
+            const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            console.log("Response Data:", data);
+    
+            if (data.status === "success") {
+                displayParticipantDetails(data.participant);
+            } else {
+                showError("Invalid QR Code", "Participant not found");
+            }
+        } catch (error) {
+            console.error("Error fetching participant:", error);
+            showError("Server Error", "Could not connect to server");
         }
-    } catch (error) {
-        console.error("Error fetching participant:", error);
-        showError("Server Error", "Could not connect to server");
     }
-}
 
     // Update participant status
     async function updateParticipantStatus(ticketId, statusType) {
