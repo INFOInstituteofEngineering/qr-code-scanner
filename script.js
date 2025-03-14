@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 onScanSuccess,
                 onScanFailure
             );
-            
+
         } catch (error) {
             console.error("Camera access denied:", error);
             alert("Please grant camera access in browser settings.");
@@ -133,20 +133,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fetch participant details from server
     async function fetchParticipantDetails(ticketId) {
-        try {
-            const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
-            const data = await response.json();
-            
-            if (data.status === "success") {
-                displayParticipantDetails(data.participant);
-            } else {
-                showError("Invalid QR Code", "Participant not found");
-            }
-        } catch (error) {
-            console.error("Error fetching participant:", error);
-            showError("Server Error", "Could not connect to server");
+    console.log("Fetching details for ticket ID:", ticketId);
+    try {
+        const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Response Data:", data);
+
+        if (data.status === "success") {
+            displayParticipantDetails(data.participant);
+        } else {
+            showError("Invalid QR Code", "Participant not found");
         }
+    } catch (error) {
+        console.error("Error fetching participant:", error);
+        showError("Server Error", "Could not connect to server");
     }
+}
 
     // Update participant status
     async function updateParticipantStatus(ticketId, statusType) {
