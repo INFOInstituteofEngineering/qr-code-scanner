@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFEST 2K25 QR Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+    </div>
+
+    <div class="container glass-effect">
+        <div class="header">
+            <div class="header-blur"></div>
+            <div class="logo">
+                <i class="fas fa-qrcode pulse-animation"></i>
+            </div>
+            <h1 class="text-gradient">INFEST 2K25 Scanner</h1>
+            <p class="tagline">Scan QR codes to verify participants</p>
+        </div>
+
+        <div class="scanner-container">
+            <div class="scanner-actions">
+                <button id="start-scan" class="primary-btn">
+                    <i class="fas fa-camera"></i>
+                    <span>Start Scanner</span>
+                </button>
+                <button id="stop-scan" class="secondary-btn hidden">
+                    <i class="fas fa-stop"></i>
+                    <span>Stop Scanner</span>
+                </button>
+            </div>
+            
+            <div id="scanner-view" class="scanner-view">
+                <div class="scan-region-highlight"></div>
+                <video id="qr-video" class="hidden"></video>
+                <div class="scan-instruction">
+                    <i class="fas fa-arrows-alt"></i>
+                    <span>Position QR code within frame</span>
+                </div>
+            </div>
+            
+            <div class="manual-input">
+                <div class="form-group floating-label">
+                    <input type="text" id="ticket-id-input">
+                    <label for="ticket-id-input">
+                        <i class="fas fa-ticket-alt form-icon"></i>
+                        Enter Ticket ID Manually
+                    </label>
+                </div>
+                <button id="manual-search" class="secondary-btn">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="result-container" class="result-container hidden">
+            <div class="result-header">
+                <div class="result-status">
+                    <div id="status-indicator" class="status-indicator"></div>
+                    <span id="status-text">Verified</span>
+                </div>
+                <button id="close-result" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="participant-details">
+                <div class="participant-header">
+                    <div class="participant-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="participant-id">
+                        <h3 id="ticket-id"></h3>
+                        <span id="scan-time"></span>
+                    </div>
+                </div>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-user"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">Name</span>
+                            <span id="participant-name" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">Email</span>
+                            <span id="participant-email" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-phone"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">Phone</span>
+                            <span id="participant-phone" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-university"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">College</span>
+                            <span id="participant-college" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-book"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">Department</span>
+                            <span id="participant-department" class="detail-value"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="detail-info">
+                            <span class="detail-label">Year</span>
+                            <span id="participant-year" class="detail-value"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="events-section">
+                    <h4><i class="fas fa-calendar-check"></i> Registered Events</h4>
+                    <div id="events-list" class="events-list"></div>
+                </div>
+                
+                <div class="payment-section">
+                    <h4><i class="fas fa-wallet"></i> Payment Status</h4>
+                    <div id="payment-status" class="payment-status"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="mark-attended" class="primary-btn">
+                        <i class="fas fa-check"></i>
+                        <span>Mark as Attended</span>
+                    </button>
+                    <button id="mark-paid" class="secondary-btn">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Mark as Paid</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="page-footer">
+        <p>© 2025 INFEST. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
+    <script src="scanner.js"></script>
+</body>
+</html>
