@@ -480,3 +480,56 @@ body {
     color: #aaa;
     font-size: 0.875rem;
 }
+
+/* Add these styles to styles.css */
+
+/* Status indicator styles */
+.status-verified {
+    background-color: var(--success-color);
+}
+
+.status-new {
+    background-color: var(--primary-color);
+}
+
+.status-error {
+    background-color: var(--error-color);
+}
+
+.status-pending {
+    background-color: var(--warning-color);
+    animation: pulse 1.5s infinite;
+}
+
+/* Make sure the scanner and video are visible */
+#scanner-view {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 300px;
+}
+
+#qr-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Event badge styling */
+.event-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    background-color: rgba(108, 99, 255, 0.2);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Payment status styling */
+.status-paid {
+    color: var(--success-color);
+    font-weight: 500;

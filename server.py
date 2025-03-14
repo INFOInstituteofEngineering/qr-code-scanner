@@ -35,10 +35,10 @@ except Exception as e:
 EMAIL_USER = "infest2k25@gmail.com"
 EMAIL_PASS = "rmac uddi oxbj qaxa"
 
-# Enable CORS
+# Enable CORS - Update this part in server.py
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],  # Add your frontend origin
+    allow_origins=["*"],  # Allow all origins for testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
