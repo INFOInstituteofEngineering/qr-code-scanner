@@ -113,13 +113,16 @@ startScanBtn.addEventListener("click", async function () {
         // Play success sound
         const successAudio = new Audio("https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/audio/annotation-check.m4a");
         successAudio.play();
-
+    
         // Stop scanner after successful scan
         html5QrCode.stop().then(() => {
             startScanBtn.classList.remove("hidden");
             stopScanBtn.classList.add("hidden");
             qrVideo.classList.add("hidden");
-            
+    
+            // Log the scanned data
+            console.log("Scanned Data:", decodedText);
+    
             // Fetch participant details
             fetchParticipantDetails(decodedText);
         }).catch(err => {

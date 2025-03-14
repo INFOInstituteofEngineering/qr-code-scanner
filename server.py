@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -10,15 +11,25 @@ from pymongo import MongoClient
 import random
 import os
 import datetime
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 os.makedirs("qrcodes", exist_ok=True)
 
 app = FastAPI()
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://infest2k25:infest2k25test@infest-2k25.3mv5l.mongodb.net/?retryWrites=true&w=majority&appName=INFEST-2K25"
-client = MongoClient(MONGO_URI)
-db = client["infest_db"]
-collection = db["registrations"]
+try:
+    client = MongoClient(MONGO_URI)
+    db = client["infest_db"]
+    collection = db["registrations"]
+    logger.info("Connected to MongoDB Atlas")
+except Exception as e:
+    logger.error(f"MongoDB Connection Error: {e}")
+    raise
 
 # Email Configuration
 EMAIL_USER = "infest2k25@gmail.com"
