@@ -27,10 +27,10 @@ EMAIL_PASS = "rmac uddi oxbj qaxa"
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500"],   # Allow all origins (change to specific origins for production)
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],  # Add your frontend origin
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Pydantic Models

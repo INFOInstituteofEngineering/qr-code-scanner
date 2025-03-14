@@ -27,15 +27,16 @@ document.addEventListener("DOMContentLoaded", function () {
     let html5QrCode;
 
     // Start scanner
-    startScanBtn.addEventListener("click", async function () {
-        startScanBtn.classList.add("hidden");
-        stopScanBtn.classList.remove("hidden");
-        qrVideo.classList.remove("hidden");
+startScanBtn.addEventListener("click", async function () {
+    startScanBtn.classList.add("hidden");
+    stopScanBtn.classList.remove("hidden");
+    qrVideo.classList.remove("hidden");
 
     try {
         // Request camera permissions
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        qrVideo.srcObject = stream;
+        qrVideo.srcObject = stream; // Assign the camera stream to the video element
+        qrVideo.play(); // Start playing the video stream
 
         html5QrCode = new Html5Qrcode("qr-video");
         html5QrCode.start(
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     } catch (error) {
         console.error("Camera access denied:", error);
-        alert("Please grant camera access in browser settings.");
+        alert("Failed to access camera. Please ensure your camera is connected and permissions are granted.");
         startScanBtn.classList.remove("hidden");
         stopScanBtn.classList.add("hidden");
         qrVideo.classList.add("hidden");
@@ -137,6 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Fetching details for ticket ID:", ticketId);
         try {
             const response = await fetch(`http://localhost:8000/participant/${ticketId}`);
+            console.log("Response status:", response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
