@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function updateParticipantStatus(ticketId, statusType) {
         console.log("Updating status for ticket ID:", ticketId, "Status type:", statusType);
         try {
-            const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/update-status${ticketId}`, {
+            const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/update-status/${ticketId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
