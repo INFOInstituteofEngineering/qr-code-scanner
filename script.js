@@ -346,14 +346,3 @@ document.addEventListener("DOMContentLoaded", function () {
     // Log startup
     logDebug("INFEST 2K25 QR Scanner initialized");
 });
-            onScanSuccess,
-            onScanFailure
-        );
-    } catch (error) {
-        console.error("Camera access denied:", error);
-        alert("Failed to access camera. Please ensure your camera is connected and permissions are granted.");
-        startScanBtn.classList.remove("hidden");
-        stopScanBtn.classList.add("hidden");
-        qrVideo.classList.add("hidden");
-    }
-});
