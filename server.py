@@ -157,7 +157,6 @@ async def get_participant(ticket_id: str):
 # Update Participant Status Route
 @app.post("/update-status")
 async def update_status(data: StatusUpdateData):
-    print(f"Updating status for ticket ID: {data.ticket_id}, status type: {data.status_type}")
     try:
         update_data = {}
         
@@ -169,18 +168,16 @@ async def update_status(data: StatusUpdateData):
             raise HTTPException(status_code=400, detail="Invalid status type")
 
         result = collection.update_one({"ticket_id": data.ticket_id}, {"$set": update_data})
-        print("Update result:", result.raw_result)
 
         if result.matched_count == 0:
-            print("Participant not found")
             return {"status": "error", "message": "Participant not found"}
         
-        print("Status updated successfully")
         return {"status": "success"}
     except Exception as e:
         print("Database Error:", e)
         raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
     
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to INFEST 2K25 Scanner API"}
