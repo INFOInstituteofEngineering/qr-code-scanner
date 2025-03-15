@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchParticipantDetails(id) {
         logDebug("Fetching details for ticket ID:", id);
         
-        const response = await fetch(`https://your-render-url/participant/${ticketId}`);
-        
+        const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}`);
+
         // Clear previous results
         resetResultDisplay();
         
