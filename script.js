@@ -129,6 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchParticipantDetails(id) {
         logDebug("Fetching details for ticket ID:", id);
         
+        const response = await fetch(`https://your-render-url/participant/${ticketId}`);
+        
         // Clear previous results
         resetResultDisplay();
         
