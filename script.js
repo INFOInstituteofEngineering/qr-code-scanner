@@ -164,24 +164,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Display participant details in UI
     function displayParticipantDetails(participant) {
-        logDebug("Displaying participant details:", participant);
-        
-        // Set basic details
+        console.log("Displaying participant details:", participant);
         ticketId.textContent = participant.ticket_id;
-        scanTime.textContent = new Date().toLocaleString();
-        participantName.textContent = participant.name || "N/A";
-        participantEmail.textContent = participant.email || "N/A";
-        participantPhone.textContent = participant.phone || "N/A";
-        participantCollege.textContent = participant.college || "N/A";
-        participantDepartment.textContent = participant.department || "N/A";
-        participantYear.textContent = participant.year ? `${participant.year}${getYearSuffix(participant.year)} Year` : "N/A";
+        participantName.textContent = participant.name;
+        participantEmail.textContent = participant.email;
+        participantPhone.textContent = participant.phone;
+        participantCollege.textContent = participant.college;
+        participantDepartment.textContent = participant.department;
+        participantYear.textContent = `${participant.year}${getYearSuffix(participant.year)} Year`;
         
-        // Set payment status
+        // Update payment status
         if (participant.payment_status === "paid") {
             paymentStatus.innerHTML = '<span class="status-paid"><i class="fas fa-check-circle"></i> Paid</span>';
         } else {
             paymentStatus.innerHTML = '<span class="status-pending"><i class="fas fa-clock"></i> Payment Pending</span>';
         }
+        
+        // Update events list
+        eventsList.innerHTML = '';
+        participant.events.forEach(event => {
+            const eventBadge = document.createElement("span");
+            eventBadge.classList.add("event-badge");
+            eventBadge.textContent = formatEventName(event);
+            eventsList.appendChild(eventBadge);
+        });
+        
+        // Show the result container
+        resultContainer.classList.remove("hidden");
 
         // Set attendance status
         statusIndicator.className = "status-indicator";
