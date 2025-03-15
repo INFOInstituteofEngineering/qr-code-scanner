@@ -137,21 +137,21 @@ async def register_user(data: RegistrationData):
 # Get Participant Details Route
 @app.get("/participant/{ticket_id}")
 async def get_participant(ticket_id: str):
+    print(f"Fetching participant with ticket ID: {ticket_id}")
     try:
         participant = collection.find_one({"ticket_id": ticket_id})
         
         if participant:
-            # Convert ObjectId to string for JSON serialization
+            print("Participant found:", participant)
             participant["_id"] = str(participant["_id"])
-            
-            # Format registration date
             if "registration_date" in participant:
                 participant["registration_date"] = participant["registration_date"].strftime("%Y-%m-%d %H:%M:%S")
-            
             return {"status": "success", "participant": participant}
         else:
+            print("Participant not found")
             return {"status": "error", "message": "Participant not found"}
     except Exception as e:
+        print("Database Error:", e)
         raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
 
 # Update Participant Status Route

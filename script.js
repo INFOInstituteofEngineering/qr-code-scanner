@@ -126,49 +126,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Fetch participant details from server
-    async function fetchParticipantDetails(id) {
-        logDebug("Fetching details for ticket ID:", id);
-        
-        const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}`);
-
-        // Clear previous results
-        resetResultDisplay();
-        
-        // Show loading state
-        resultContainer.classList.remove("hidden");
-        statusIndicator.className = "status-indicator";
-        statusIndicator.classList.add("status-pending");
-        statusText.textContent = "Searching...";
-        ticketId.textContent = id;
-        scanTime.textContent = new Date().toLocaleString();
-        
+    async function fetchParticipantDetails(ticketId) {
+        console.log("Ticket ID being scanned:", ticketId);
         try {
-            const apiUrl = `https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}`;
-            logDebug("Calling API:", apiUrl);
-            
-            const response = await fetch(apiUrl);
-            logDebug("API response status:", response.status);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            
+            const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}`);
             const data = await response.json();
-            logDebug("API response data:", data);
+            console.log("API Response:", data);
             
-            if (data.status === "success" && data.participant) {
+            if (data.status === "success") {
                 displayParticipantDetails(data.participant);
             } else {
-                showError("Invalid Ticket", "Participant not found in database");
+                showError("Invalid QR Code", "Participant not found");
             }
         } catch (error) {
-            logDebug("Error fetching participant:", error);
-            
-            if (error.message.includes("Failed to fetch")) {
-                showError("Connection Error", "Could not connect to server. Make sure server is running at http://localhost:8000");
-            } else {
-                showError("Server Error", error.message);
-            }
+            console.error("Error fetching participant:", error);
+            showError("Server Error", "Could not connect to server");
         }
     }
 
