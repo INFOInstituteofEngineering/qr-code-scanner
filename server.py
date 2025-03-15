@@ -11,6 +11,7 @@ from pymongo import MongoClient
 import random
 import os
 import datetime
+from fastapi import FastAPI
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -174,3 +175,12 @@ async def update_status(data: StatusUpdateData):
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
+    
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to INFEST 2K25 Scanner API"}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 10000))  # Default to 10000 if PORT is not set
+    uvicorn.run(app, host="0.0.0.0", port=port)
