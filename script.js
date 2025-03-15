@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
         scanTime.textContent = new Date().toLocaleString();
         
         try {
-            const apiUrl = `http://localhost:8000/participant/${id}`;
+            const apiUrl = `https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}`;
             logDebug("Calling API:", apiUrl);
             
             const response = await fetch(apiUrl);
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
         logDebug(`Updating status for ${id} to ${statusType}`);
         
         try {
-            const response = await fetch("http://localhost:8000/update-status", {
+            const response = await fetch("https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
