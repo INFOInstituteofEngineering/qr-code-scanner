@@ -259,21 +259,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Update participant status
-    async function updateParticipantStatus(id, statusType) {
-        logDebug(`Updating status for ${id} to ${statusType}`);
-        
+    async function updateParticipantStatus(ticketId, statusType) {
+        console.log("Updating status for ticket ID:", ticketId, "Status type:", statusType);
         try {
-            const response = await fetch("https://qr-code-scanner-29ne.onrender.com/participant/${ticketId}", {
+            const response = await fetch(`https://qr-code-scanner-29ne.onrender.com/update-status${ticketId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ticket_id: id,
+                    ticket_id: ticketId,
                     status_type: statusType
                 })
             });
             
             const data = await response.json();
-            logDebug("Status update response:", data);
+            console.log("API Response:", data);
             
             if (data.status === "success") {
                 alert(`Participant successfully marked as ${statusType}`);
@@ -282,15 +281,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (statusType === "paid") {
                     paymentStatus.innerHTML = '<span class="status-paid"><i class="fas fa-check-circle"></i> Paid</span>';
                 } else if (statusType === "attended") {
-                    statusIndicator.className = "status-indicator";
                     statusIndicator.classList.add("status-verified");
                     statusText.textContent = "Attended";
                 }
             } else {
-                alert("Failed to update participant status: " + (data.message || "Unknown error"));
+                alert("Failed to update participant status");
             }
         } catch (error) {
-            logDebug("Error updating status:", error);
+            console.error("Error updating status:", error);
             alert("Server error. Please try again.");
         }
     }
